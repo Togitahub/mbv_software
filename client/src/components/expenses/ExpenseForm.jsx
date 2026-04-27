@@ -1,14 +1,20 @@
 import { useState } from "react";
-import { useQuery, useMutation } from "@apollo/client";
+import { useQuery, useMutation } from "@apollo/client/react";
+
 import { GET_CARS } from "../../graphql/queries/carQueries";
+
 import {
 	CREATE_EXPENSE,
 	UPDATE_EXPENSE,
 } from "../../graphql/mutations/expenseMutations";
+
 import { useToast } from "../../context/ToastContext";
+
 import Input from "../ui/Input";
 import Select from "../ui/Select";
 import Button from "../ui/Button";
+import ImageUploader from "../cars/ImageUploader";
+
 import { EXPENSE_TYPE_OPTIONS } from "../../utils/constants";
 
 const initialFormData = {
@@ -44,6 +50,10 @@ const ExpenseForm = ({ expense, onClose, onSuccess }) => {
 
 	const [errors, setErrors] = useState({});
 
+	const [receipt, setReceipt] = useState(() => {
+		return expense?.receipt ? [expense.receipt] : [];
+	});
+
 	const { data: carsData } = useQuery(GET_CARS, {
 		variables: { page: 1, limit: 1000 },
 	});
@@ -69,6 +79,11 @@ const ExpenseForm = ({ expense, onClose, onSuccess }) => {
 			type,
 			isFromJuanCarlos: expenseType?.isJC || false,
 		}));
+	};
+
+	const handleReceiptChange = (images) => {
+		setReceipt(images);
+		handleChange("receipt", images[0] || "");
 	};
 
 	const validate = () => {
@@ -170,6 +185,11 @@ const ExpenseForm = ({ expense, onClose, onSuccess }) => {
 				onChange={(e) => handleChange("expenseDate", e.target.value)}
 				error={errors.expenseDate}
 				size="sm"
+			/>
+			<ImageUploader
+				images={receipt}
+				onImagesChange={handleReceiptChange}
+				maxImages={1}
 			/>
 			<div className="flex justify-end gap-3 pt-4 border-t border-first/10">
 				<Button type="button" variant="ghost" onClick={onClose}>

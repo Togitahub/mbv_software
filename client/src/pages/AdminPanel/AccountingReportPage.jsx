@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import { GET_CARS } from "../../graphql/queries/carQueries";
 import { GET_DAVE_CARS } from "../../graphql/queries/daveCarQueries";
 import Button from "../../components/ui/Button";

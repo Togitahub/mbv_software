@@ -203,7 +203,9 @@ const CarsManagementPage = () => {
 												</td>
 												<td className="p-4">
 													<p className="text-sm text-first/60">
-														{formatDate(car.creationDate)}
+														{car.creationDate || car.purchaseDate
+															? formatDate(car.creationDate || car.purchaseDate)
+															: "—"}
 													</p>
 												</td>
 												<td className="p-4">

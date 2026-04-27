@@ -286,7 +286,7 @@ const Navbar = () => {
 							href={socialLinks.instagram}
 							target="_blank"
 							rel="noopener noreferrer"
-							className="text-main/50 hover:text-second"
+							className="text-first/50 hover:text-second"
 						>
 							<BsInstagram className="w-4 h-4" />
 						</a>
@@ -294,7 +294,7 @@ const Navbar = () => {
 							href={socialLinks.whatsapp}
 							target="_blank"
 							rel="noopener noreferrer"
-							className="text-main/50 hover:text-second"
+							className="text-first/50 hover:text-second"
 						>
 							<FaWhatsapp className="w-4 h-4" />
 						</a>
@@ -302,7 +302,7 @@ const Navbar = () => {
 							href={socialLinks.facebook}
 							target="_blank"
 							rel="noopener noreferrer"
-							className="text-main/50 hover:text-second"
+							className="text-first/50 hover:text-second"
 						>
 							<BsFacebook className="w-4 h-4" />
 						</a>
@@ -310,7 +310,7 @@ const Navbar = () => {
 							href={socialLinks.tiktok}
 							target="_blank"
 							rel="noopener noreferrer"
-							className="text-main/50 hover:text-second"
+							className="text-first/50 hover:text-second"
 						>
 							<BsTiktok className="w-4 h-4" />
 						</a>

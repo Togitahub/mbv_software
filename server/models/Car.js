@@ -195,9 +195,8 @@ const carSchema = new mongoose.Schema({
 });
 
 // Update the updateDate field before each save
-carSchema.pre("save", function (next) {
+carSchema.pre("save", function () {
 	this.updateDate = new Date();
-	next();
 });
 
 // Virtual for profit calculation

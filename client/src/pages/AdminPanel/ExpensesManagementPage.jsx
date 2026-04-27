@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useQuery, useMutation } from "@apollo/client";
+import { useQuery, useMutation } from "@apollo/client/react";
 import { GET_EXPENSES } from "../../graphql/queries/expenseQueries";
 import { DELETE_EXPENSE } from "../../graphql/mutations/expenseMutations";
 import { useToast } from "../../context/ToastContext";

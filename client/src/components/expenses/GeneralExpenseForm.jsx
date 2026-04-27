@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useMutation } from "@apollo/client";
+import { useMutation } from "@apollo/client/react";
 import {
 	CREATE_GENERAL_EXPENSE,
 	UPDATE_GENERAL_EXPENSE,
@@ -8,6 +8,7 @@ import { useToast } from "../../context/ToastContext";
 import Input from "../ui/Input";
 import Select from "../ui/Select";
 import Button from "../ui/Button";
+import ImageUploader from "../cars/ImageUploader";
 
 const initialFormData = {
 	concept: "",
@@ -38,6 +39,10 @@ const GeneralExpenseForm = ({ expense, onClose, onSuccess }) => {
 
 	const [errors, setErrors] = useState({});
 
+	const [receipt, setReceipt] = useState(() => {
+		return expense?.receipt ? [expense.receipt] : [];
+	});
+
 	const [createExpense, { loading: creating }] = useMutation(
 		CREATE_GENERAL_EXPENSE,
 	);
@@ -50,6 +55,11 @@ const GeneralExpenseForm = ({ expense, onClose, onSuccess }) => {
 	const handleChange = (field, value) => {
 		setFormData((prev) => ({ ...prev, [field]: value }));
 		if (errors[field]) setErrors((prev) => ({ ...prev, [field]: "" }));
+	};
+
+	const handleReceiptChange = (images) => {
+		setReceipt(images);
+		handleChange("receipt", images[0] || "");
 	};
 
 	const validate = () => {
@@ -137,6 +147,11 @@ const GeneralExpenseForm = ({ expense, onClose, onSuccess }) => {
 				value={formData.description}
 				onChange={(e) => handleChange("description", e.target.value)}
 				size="sm"
+			/>
+			<ImageUploader
+				images={receipt}
+				onImagesChange={handleReceiptChange}
+				maxImages={1}
 			/>
 			<div className="flex justify-end gap-3 pt-4 border-t border-first/10">
 				<Button type="button" variant="ghost" onClick={onClose}>

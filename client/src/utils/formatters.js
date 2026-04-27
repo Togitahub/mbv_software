@@ -38,11 +38,18 @@ export const formatUSD = (amount) => {
 export const formatDate = (date) => {
 	if (!date) return "—";
 
-	return new Intl.DateTimeFormat("es-CR", {
-		year: "numeric",
-		month: "long",
-		day: "numeric",
-	}).format(new Date(date));
+	try {
+		const dateObj = new Date(date);
+		if (isNaN(dateObj.getTime())) return "—";
+
+		return new Intl.DateTimeFormat("es-CR", {
+			year: "numeric",
+			month: "long",
+			day: "numeric",
+		}).format(dateObj);
+	} catch {
+		return "—";
+	}
 };
 
 /**

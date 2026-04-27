@@ -1,5 +1,7 @@
-import { useQuery } from "@apollo/client/react";
+import { useQuery, useMutation } from "@apollo/client/react";
 import { Link } from "react-router-dom";
+import { useState } from "react";
+
 import {
 	BsCarFront,
 	BsPeople,
@@ -11,15 +13,26 @@ import {
 	BsCurrencyDollar,
 	BsArrowRight,
 } from "react-icons/bs";
+
 import { GET_CARS } from "../../graphql/queries/carQueries";
 import { GET_CLIENTS } from "../../graphql/queries/userQueries";
 import { GET_COMPANY_BALANCE } from "../../graphql/queries/companyBalanceQueries";
 import { GET_JC_DEBT_SUMMARY } from "../../graphql/queries/jcPaymentQueries";
 import { GET_EXCHANGE_RATE } from "../../graphql/queries/exchangeRateQueries";
+
+import { UPDATE_EXCHANGE_RATE } from "../../graphql/mutations/exchangeRateMutations";
+
+import Input from "../../components/ui/Input";
+import Button from "../../components/ui/Button";
+import { Modal } from "../../components/ui/Modal";
 import { LoadingOverlay } from "../../components/ui/LoadingUi";
 import { formatCRC, formatUSD } from "../../utils/formatters";
 
 const AdminDashboardPage = () => {
+	const [showExchangeModal, setShowExchangeModal] = useState(false);
+	const [newExchangeRate, setNewExchangeRate] = useState("");
+	const [updatingRate, setUpdatingRate] = useState(false);
+
 	const { data: carsData, loading: carsLoading } = useQuery(GET_CARS, {
 		variables: { page: 1, limit: 1000 },
 	});
@@ -30,6 +43,8 @@ const AdminDashboardPage = () => {
 	const { data: jcDebtData, loading: jcDebtLoading } =
 		useQuery(GET_JC_DEBT_SUMMARY);
 	const { data: exchangeData } = useQuery(GET_EXCHANGE_RATE);
+
+	const [updateExchangeRate] = useMutation(UPDATE_EXCHANGE_RATE);
 
 	const loading =
 		carsLoading || clientsLoading || balanceLoading || jcDebtLoading;
@@ -100,6 +115,22 @@ const AdminDashboardPage = () => {
 			link: null,
 		},
 	];
+
+	const handleUpdateRate = async () => {
+		if (!newExchangeRate || Number(newExchangeRate) <= 0) {
+			return;
+		}
+		setUpdatingRate(true);
+		try {
+			await updateExchangeRate({
+				variables: { value: Number(newExchangeRate) },
+			});
+			window.location.reload(); // Recargar para actualizar todas las queries
+		} catch (error) {
+			console.error(error);
+		}
+		setUpdatingRate(false);
+	};
 
 	if (loading)
 		return <LoadingOverlay visible={true} text="Cargando dashboard..." />;
@@ -272,11 +303,17 @@ const AdminDashboardPage = () => {
 								</span>
 							</div>
 							<div className="border-t border-first/10 pt-3">
-								<div className="flex justify-between">
+								<div className="flex justify-between items-center">
 									<span className="text-sm text-first/50">Tipo de cambio</span>
-									<span className="text-sm font-medium text-first">
+									<button
+										onClick={() => {
+											setNewExchangeRate(exchangeRate?.toString() || "");
+											setShowExchangeModal(true);
+										}}
+										className="text-sm font-medium text-first hover:text-second transition-colors underline underline-offset-2"
+									>
 										{formatCRC(exchangeRate)} / USD
-									</span>
+									</button>
 								</div>
 							</div>
 						</div>
@@ -333,7 +370,14 @@ const AdminDashboardPage = () => {
 								className="flex items-center gap-2 w-full text-left px-4 py-3 rounded-xl bg-first/5 hover:bg-first/10 text-sm text-first transition-colors"
 							>
 								<BsCurrencyDollar className="w-4 h-4" />
-								Registrar gastos
+								Registrar Gastos de autos
+							</Link>
+							<Link
+								to="/admin/general-expenses"
+								className="flex items-center gap-2 w-full text-left px-4 py-3 rounded-xl bg-first/5 hover:bg-first/10 text-sm text-first transition-colors"
+							>
+								<BsCurrencyDollar className="w-4 h-4" />
+								Registrar Gastos generales
 							</Link>
 							<Link
 								to="/admin/reports"
@@ -344,6 +388,53 @@ const AdminDashboardPage = () => {
 							</Link>
 						</div>
 					</div>
+
+					{/* Modal para actualizar tipo de cambio */}
+					<Modal
+						isOpen={showExchangeModal}
+						onClose={() => setShowExchangeModal(false)}
+						title="Actualizar Tipo de Cambio"
+						size="sm"
+					>
+						<div className="space-y-4">
+							<div>
+								<p className="text-sm text-first/50 mb-1">
+									Tipo de cambio actual
+								</p>
+								<p className="text-xl font-bold text-first">
+									{formatCRC(exchangeRate)} por USD
+								</p>
+							</div>
+							<Input
+								label="Nuevo valor (CRC por USD)"
+								type="number"
+								value={newExchangeRate}
+								onChange={(e) => setNewExchangeRate(e.target.value)}
+								placeholder="Ej: 540"
+								min={0}
+								size="md"
+							/>
+							<p className="text-xs text-first/40">
+								Este valor afecta todos los cálculos de conversión USD a CRC en
+								el sistema.
+							</p>
+							<div className="flex justify-end gap-2 pt-2">
+								<Button
+									variant="ghost"
+									onClick={() => setShowExchangeModal(false)}
+								>
+									Cancelar
+								</Button>
+								<Button
+									onClick={handleUpdateRate}
+									loading={updatingRate}
+									disabled={!newExchangeRate || Number(newExchangeRate) <= 0}
+								>
+									Actualizar
+								</Button>
+							</div>
+						</div>
+					</Modal>
 				</div>
 			</div>
 		</div>

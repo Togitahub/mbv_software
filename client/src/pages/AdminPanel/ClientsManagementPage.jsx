@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useQuery, useMutation } from "@apollo/client";
+import { useQuery, useMutation } from "@apollo/client/react";
 import { GET_CLIENTS } from "../../graphql/queries/userQueries";
 import {
 	DELETE_USER,

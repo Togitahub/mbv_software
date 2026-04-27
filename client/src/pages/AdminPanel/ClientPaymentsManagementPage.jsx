@@ -17,6 +17,7 @@ import { LoadingOverlay } from "../../components/ui/LoadingUi";
 import EmptyState from "../../components/ui/EmptyState";
 import { BsPlus, BsPencil, BsTrash } from "react-icons/bs";
 import { formatCRC, formatDate } from "../../utils/formatters";
+import ImageUploader from "../../components/cars/ImageUploader";
 
 const ClientPaymentsManagementPage = () => {
 	const { toast } = useToast();
@@ -31,6 +32,8 @@ const ClientPaymentsManagementPage = () => {
 		paymentMethod: "",
 		pendingBalance: "",
 	});
+
+	const [receipt, setReceipt] = useState([]);
 
 	const {
 		data: paymentsData,
@@ -135,6 +138,7 @@ const ClientPaymentsManagementPage = () => {
 			paymentMethod: payment.paymentMethod || "",
 			pendingBalance: payment.pendingBalance?.toString() || "",
 		});
+		setReceipt(payment.receipt ? [payment.receipt] : []);
 	};
 
 	const resetForm = () => {
@@ -146,6 +150,12 @@ const ClientPaymentsManagementPage = () => {
 			paymentMethod: "",
 			pendingBalance: "",
 		});
+		setReceipt([]);
+	};
+
+	const handleReceiptChange = (images) => {
+		setReceipt(images);
+		setFormData((p) => ({ ...p, receipt: images[0] || "" }));
 	};
 
 	const paymentMethodOptions = [
@@ -362,6 +372,11 @@ const ClientPaymentsManagementPage = () => {
 								setFormData((p) => ({ ...p, paymentMethod: e.target.value }))
 							}
 							placeholder="Seleccionar método..."
+						/>
+						<ImageUploader
+							images={receipt}
+							onImagesChange={handleReceiptChange}
+							maxImages={1}
 						/>
 						<div className="flex justify-end gap-2 pt-2">
 							<Button

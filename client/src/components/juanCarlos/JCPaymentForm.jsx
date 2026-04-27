@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useQuery, useMutation } from "@apollo/client";
+import { useQuery, useMutation } from "@apollo/client/react";
 import { GET_CARS } from "../../graphql/queries/carQueries";
 import {
 	CREATE_JC_PAYMENT,
@@ -8,6 +8,7 @@ import {
 import { useToast } from "../../context/ToastContext";
 import Input from "../ui/Input";
 import Button from "../ui/Button";
+import ImageUploader from "../cars/ImageUploader";
 
 const initialFormData = {
 	amount: "",
@@ -38,6 +39,10 @@ const JCPaymentForm = ({ payment, onClose, onSuccess }) => {
 
 	const [errors, setErrors] = useState({});
 
+	const [receipt, setReceipt] = useState(() => {
+		return payment?.receipt ? [payment.receipt] : [];
+	});
+
 	const { data: carsData } = useQuery(GET_CARS, {
 		variables: { page: 1, limit: 1000 },
 	});
@@ -50,6 +55,11 @@ const JCPaymentForm = ({ payment, onClose, onSuccess }) => {
 	const handleChange = (field, value) => {
 		setFormData((prev) => ({ ...prev, [field]: value }));
 		if (errors[field]) setErrors((prev) => ({ ...prev, [field]: "" }));
+	};
+
+	const handleReceiptChange = (images) => {
+		setReceipt(images);
+		handleChange("receipt", images[0] || "");
 	};
 
 	const toggleCar = (carId) => {
@@ -173,6 +183,11 @@ const JCPaymentForm = ({ payment, onClose, onSuccess }) => {
 					)}
 				</div>
 			</div>
+			<ImageUploader
+				images={receipt}
+				onImagesChange={handleReceiptChange}
+				maxImages={1}
+			/>
 			<div className="flex justify-end gap-3 pt-4 border-t border-first/10">
 				<Button type="button" variant="ghost" onClick={onClose}>
 					Cancelar
