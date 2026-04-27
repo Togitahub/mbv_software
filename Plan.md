@@ -75,20 +75,14 @@ software_mbv/
 │ │ │ │ └── ProfitSimulator.jsx # Profit calculator simulator (no save) just calculate wihout button to sabe or similar
 │ │ │ ├── clients/
 │ │ │ │ ├── ClientForm.jsx
-│ │ │ │ ├── ClientList.jsx
 │ │ │ │ └── MyCarsTimeline.jsx # Logistic timeline for client
 │ │ │ ├── expenses/
 │ │ │ │ ├── ExpenseForm.jsx
-│ │ │ │ ├── ExpenseList.jsx
 │ │ │ │ └── GeneralExpenseForm.jsx
 │ │ │ ├── juanCarlos/
 │ │ │ │ ├── JCPaymentForm.jsx
-│ │ │ │ ├── JCPaymentList.jsx
 │ │ │ │ └── DebtSummary.jsx
 │ │ │ ├── dashboard/
-│ │ │ │ ├── DashboardStats.jsx
-│ │ │ │ ├── FinancialChart.jsx
-│ │ │ │ ├── LogisticsChart.jsx
 │ │ │ │ └── DateRangeFilter.jsx
 │ │ │ └── ui/
 │ │ │ ├── Badge.jsx

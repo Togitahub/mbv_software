@@ -6,7 +6,7 @@
  */
 export const uploadImage = async (file, folder = "vehicles") => {
 	try {
-		const serverUrl = import.meta.env.VITE_API_URI || "http://localhost:4000/graphql";
+		const serverUrl = import.meta.env.VITE_API_URI || "http://localhost:4000";
 
 		// Obtener firma del servidor
 		const signatureResponse = await fetch(
@@ -67,7 +67,7 @@ export const uploadImage = async (file, folder = "vehicles") => {
  */
 export const deleteImage = async (url) => {
 	try {
-		const serverUrl = import.meta.env.VITE_API_URI || "http://localhost:4000/graphql";
+		const serverUrl = import.meta.env.VITE_API_URI || "http://localhost:4000";
 
 		const response = await fetch(`${serverUrl}/api/cloudinary-delete`, {
 			method: "POST",
