@@ -11,11 +11,11 @@ import { client, persistCachePromise } from "./config/apolloClient";
 import { AuthProvider } from "./context/AuthContext";
 import { ThemeProvider } from "./context/ThemeContext";
 import { CarProvider } from "./context/CarContext";
+import { ToastProvider } from "./context/ToastContext";
 import { ExpensesProvider } from "./context/ExpensesContext";
 import { WhatsAppProvider } from "./context/WhatsAppContext";
 
 // Component
-import { ToastProvider } from "./components/ui/Toast";
 import App from "./App";
 
 // Styles

@@ -49,12 +49,17 @@ const Filters = ({
                      placeholder:text-first/30 transition-all duration-150"
 					/>
 				</div>
-				<Button type="submit" size="sm" icon={<BsSearch className="w-4 h-4" />}>
+				<Button
+					type="submit"
+					variant="secondary"
+					size="sm"
+					icon={<BsSearch className="w-4 h-4" />}
+				>
 					Buscar
 				</Button>
 				<Button
 					type="button"
-					variant="ghost"
+					variant="outline"
 					size="sm"
 					icon={<BsFilter className="w-4 h-4" />}
 					onClick={() => setIsAdvancedOpen(!isAdvancedOpen)}

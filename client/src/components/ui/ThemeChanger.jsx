@@ -12,7 +12,7 @@ const ThemeChanger = () => {
 				<Button
 					iconOnly
 					rounded
-					variant="ghost"
+					variant="secondary"
 					icon={<BsSunFill />}
 					onClick={() => changeTheme(themes[1])}
 				/>
@@ -20,7 +20,7 @@ const ThemeChanger = () => {
 				<Button
 					iconOnly
 					rounded
-					variant="ghost"
+					variant="secondary"
 					icon={<BsMoonFill />}
 					onClick={() => changeTheme(themes[0])}
 				/>

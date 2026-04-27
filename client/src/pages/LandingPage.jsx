@@ -33,7 +33,7 @@ const LandingPage = () => {
 	return (
 		<div className="min-h-screen">
 			{/* Hero Section */}
-			<section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+			<section className="relative py-20 min-h-screen flex items-center justify-center overflow-hidden">
 				{/* Background with gradient */}
 				<div className="absolute inset-0 bg-linear-to-br from-second via-second/95 to-main" />
 
@@ -52,14 +52,11 @@ const LandingPage = () => {
 							opacity: Math.max(0, 1 - scrollY / 500),
 						}}
 					>
-						<h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-main tracking-tight">
-							Importaciones{" "}
-							<span className="text-transparent bg-clip-text bg-linear-to-r from-[#00C9A7] to-[#00B894]">
-								MBV
-							</span>
+						<h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-first tracking-tight">
+							Importaciones MBV
 						</h1>
 
-						<p className="text-lg sm:text-xl text-main/70 max-w-2xl mx-auto leading-relaxed">
+						<p className="text-sm sm:text-xl text-first/70 max-w-2xl mx-auto leading-relaxed">
 							Vehículos importados desde Florida, USA. Calidad, confianza y el
 							mejor servicio en cada auto que traemos para ti.
 						</p>
@@ -67,9 +64,7 @@ const LandingPage = () => {
 						<div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
 							<button
 								onClick={scrollToCatalog}
-								className="group inline-flex items-center gap-2 px-8 py-3 bg-main text-second rounded-full font-medium
-                         hover:bg-main/90 transition-all duration-300 hover:shadow-lg hover:shadow-main/20
-                         transform hover:-translate-y-0.5"
+								className="group inline-flex cursor-pointer items-center gap-2 px-8 py-3 bg-main text-first rounded-full font-medium hover:bg-main/50 transition-all duration-300 hover:shadow-lg transform hover:-translate-y-0.5"
 							>
 								Ver catálogo
 								<BsArrowDown className="w-4 h-4 group-hover:animate-bounce" />
@@ -77,8 +72,7 @@ const LandingPage = () => {
 
 							<Link
 								to="/brands"
-								className="inline-flex items-center gap-2 px-8 py-3 border border-main/30 text-main rounded-full font-medium
-                         hover:bg-main/10 transition-all duration-300"
+								className="inline-flex items-center gap-2 px-8 py-3 border border-first/30 shadow-lg text-first rounded-full font-medium hover:bg-main/10 transition-all duration-300"
 							>
 								Ver marcas
 								<BsChevronRight className="w-4 h-4" />
@@ -97,10 +91,10 @@ const LandingPage = () => {
 								{ value: "24/7", label: "Soporte WhatsApp" },
 							].map((stat) => (
 								<div key={stat.label} className="text-center">
-									<div className="text-2xl font-bold text-main">
+									<div className="text-2xl font-bold text-first">
 										{stat.value}
 									</div>
-									<div className="text-sm text-main/60 mt-1">{stat.label}</div>
+									<div className="text-sm text-first/60 mt-1">{stat.label}</div>
 								</div>
 							))}
 						</div>

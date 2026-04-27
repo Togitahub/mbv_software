@@ -2,7 +2,7 @@
 import { Toaster, toast } from "react-hot-toast";
 
 // Componente Toaster para usar en App.jsx
-export const ToastProvider = () => {
+export const ToastUi = () => {
 	return (
 		<Toaster
 			position="top-right"

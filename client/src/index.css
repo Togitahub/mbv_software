@@ -1,15 +1,15 @@
 @import "tailwindcss";
 
 .dark-theme {
-	--color-main: rgb(14, 14, 88);
-	--color-first: #f5f5fa;
-	--color-second: #0a0a2a;
+	--color-main: #052753;
+	--color-first: #f8fafc;
+	--color-second: #334155;
 }
 
 .light-theme {
-	--color-main: #f5f5fa;
-	--color-first: #0a0a2a;
-	--color-second: rgb(14, 14, 88);
+	--color-main: #ffffff;
+	--color-first: #0f172a;
+	--color-second: #0c7beb;
 }
 
 @theme {
@@ -39,3 +39,4 @@
 ::-webkit-scrollbar-thumb:hover {
 	background: var(--color-second);
 }
+
