@@ -83,6 +83,7 @@ const GeneralExpenseForm = ({ expense, onClose, onSuccess }) => {
 				currency: formData.currency,
 				expenseDate: formData.expenseDate,
 				description: formData.description.trim() || undefined,
+				receipt: formData.receipt || undefined,
 			},
 		};
 

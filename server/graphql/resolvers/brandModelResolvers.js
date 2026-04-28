@@ -79,11 +79,13 @@ const brandModelResolvers = {
 			});
 			if (existingModel) throw new Error("Model already exists for this brand");
 
-			return CarModel.create({
+			const model = await CarModel.create({
 				name: input.name.toUpperCase(),
 				brand: input.brand,
 				createdBy: user._id,
 			});
+
+			return CarModel.findById(model._id).populate("brand");
 		},
 
 		updateCarModel: async (_, { id, input }, { user }) => {

@@ -13,7 +13,7 @@ import { LoadingOverlay } from "../../components/ui/LoadingUi";
 import EmptyState from "../../components/ui/EmptyState";
 import JCPaymentForm from "../../components/juanCarlos/JCPaymentForm";
 import DebtSummary from "../../components/juanCarlos/DebtSummary";
-import { BsPlus, BsPencil, BsTrash } from "react-icons/bs";
+import { BsPlus, BsPencil, BsTrash, BsFileText } from "react-icons/bs";
 import { formatUSD, formatDate } from "../../utils/formatters";
 
 const JCPaymentsManagementPage = () => {
@@ -46,7 +46,7 @@ const JCPaymentsManagementPage = () => {
 		return <LoadingOverlay visible={true} text="Cargando pagos..." />;
 
 	return (
-		<div className="min-h-screen pt-20 pb-16">
+		<div className="min-h-screen pt-6 pb-16">
 			<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 				<div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
 					<div>
@@ -137,10 +137,24 @@ const JCPaymentsManagementPage = () => {
 													{payment.transferReference || "—"}
 												</p>
 											</td>
+
 											<td className="p-4">
 												<div className="flex items-center justify-end gap-1">
 													{payment.updatable && (
 														<>
+															{payment.receipt && (
+																<Button
+																	iconOnly
+																	variant="ghost"
+																	size="sm"
+																	className="text-second"
+																	icon={<BsFileText className="w-3.5 h-3.5" />}
+																	onClick={() =>
+																		window.open(payment.receipt, "_blank")
+																	}
+																	title="Ver comprobante"
+																/>
+															)}
 															<Button
 																iconOnly
 																variant="ghost"

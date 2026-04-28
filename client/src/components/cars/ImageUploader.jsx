@@ -82,6 +82,14 @@ const ImageUploader = ({ images = [], onImagesChange, maxImages = 8 }) => {
 		e.target.value = "";
 	};
 
+	const handleSetPrimary = (index) => {
+		if (index === 0) return; // Ya es principal
+		const newImages = [...images];
+		const [primary] = newImages.splice(index, 1);
+		newImages.unshift(primary);
+		onImagesChange(newImages);
+	};
+
 	return (
 		<div className="space-y-3">
 			<p className="text-sm font-medium text-first/80">
@@ -110,11 +118,23 @@ const ImageUploader = ({ images = [], onImagesChange, maxImages = 8 }) => {
 							>
 								<BsX className="w-4 h-4" />
 							</button>
-							{index === 0 && (
-								<span className="absolute bottom-1 left-1 bg-black/60 text-white text-xs px-1.5 py-0.5 rounded">
-									Principal
-								</span>
-							)}
+							<button
+								type="button"
+								onClick={(e) => {
+									e.stopPropagation();
+									handleSetPrimary(index);
+								}}
+								className={`absolute bottom-1 left-1 text-xs px-1.5 py-0.5 rounded transition-colors ${
+									index === 0
+										? "bg-second text-white"
+										: "bg-black/40 text-white/70 hover:bg-black/60"
+								}`}
+								title={
+									index === 0 ? "Imagen principal" : "Establecer como principal"
+								}
+							>
+								{index === 0 ? "★ Principal" : "☆"}
+							</button>
 						</div>
 					))}
 				</div>

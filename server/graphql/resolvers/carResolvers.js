@@ -431,6 +431,20 @@ const carResolvers = {
 			const expenses = await Expense.find({ car: car._id });
 			return calculateCarProfit(car, expenses);
 		},
+		purchaseDate: (car) => car.purchaseDate?.toISOString?.() ?? null,
+		saleDate: (car) => car.saleDate?.toISOString?.() ?? null,
+		duaRegistrationDate: (car) =>
+			car.duaRegistrationDate?.toISOString?.() ?? null,
+		creationDate: (car) => car.creationDate?.toISOString?.() ?? null,
+		updateDate: (car) => car.updateDate?.toISOString?.() ?? null,
+		departureFloridaDate: (car) =>
+			car.departureFloridaDate?.toISOString?.() ?? null,
+		warehouseArrivalDate: (car) =>
+			car.warehouseArrivalDate?.toISOString?.() ?? null,
+		dekraPendingDate: (car) => car.dekraPendingDate?.toISOString?.() ?? null,
+		availableForSaleDate: (car) =>
+			car.availableForSaleDate?.toISOString?.() ?? null,
+		repairDate: (car) => car.repairDate?.toISOString?.() ?? null,
 	},
 };
 

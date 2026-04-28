@@ -120,10 +120,13 @@ const CarForm = ({ car, onClose, onSuccess }) => {
 	const [newModelName, setNewModelName] = useState("");
 	const [errors, setErrors] = useState({});
 
-	const { data: brandsData } = useQuery(GET_BRANDS);
-	const { data: modelsData } = useQuery(GET_CAR_MODELS, {
-		variables: { brandId: formData.brand || undefined },
-	});
+	const { data: brandsData, refetch: refetchBrands } = useQuery(GET_BRANDS);
+	const { data: modelsData, refetch: refetchModels } = useQuery(
+		GET_CAR_MODELS,
+		{
+			variables: { brandId: formData.brand || undefined },
+		},
+	);
 	const { data: clientsData } = useQuery(GET_CLIENTS);
 
 	const [createCar, { loading: creating }] = useMutation(CREATE_CAR);
@@ -188,6 +191,7 @@ const CarForm = ({ car, onClose, onSuccess }) => {
 			setFormData((prev) => ({ ...prev, brand: data.createBrand._id }));
 			setNewBrandName("");
 			setShowNewBrand(false);
+			refetchBrands();
 			toast.success("Marca creada exitosamente");
 		} catch (error) {
 			toast.error(error.message || "Error al crear marca");
@@ -202,9 +206,11 @@ const CarForm = ({ car, onClose, onSuccess }) => {
 					input: { name: newModelName.trim(), brand: formData.brand },
 				},
 			});
+			console.log("Model created:", data);
 			setFormData((prev) => ({ ...prev, carModel: data.createCarModel._id }));
 			setNewModelName("");
 			setShowNewModel(false);
+			refetchModels({ brandId: formData.brand });
 			toast.success("Modelo creado exitosamente");
 		} catch (error) {
 			toast.error(error.message || "Error al crear modelo");

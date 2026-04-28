@@ -13,6 +13,7 @@ export const GET_EXPENSES = gql`
 					name
 				}
 				year
+				vin
 			}
 			type
 			description

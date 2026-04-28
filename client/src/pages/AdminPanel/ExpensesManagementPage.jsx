@@ -9,7 +9,16 @@ import { Modal, ConfirmDialog } from "../../components/ui/Modal";
 import { LoadingOverlay } from "../../components/ui/LoadingUi";
 import EmptyState from "../../components/ui/EmptyState";
 import ExpenseForm from "../../components/expenses/ExpenseForm";
-import { BsPlus, BsPencil, BsTrash, BsSearch } from "react-icons/bs";
+import {
+	BsPlus,
+	BsPencil,
+	BsTrash,
+	BsSearch,
+	BsCarFront,
+	BsCalendar,
+	BsCash,
+	BsFileText,
+} from "react-icons/bs";
 import { formatCRC, formatUSD, formatDate } from "../../utils/formatters";
 
 const ExpensesManagementPage = () => {
@@ -50,8 +59,8 @@ const ExpensesManagementPage = () => {
 		return <LoadingOverlay visible={true} text="Cargando gastos..." />;
 
 	return (
-		<div className="min-h-screen pt-20 pb-16">
-			<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+		<div className="min-h-screen pb-16">
+			<div className="px-4 sm:px-6 lg:px-8 py-6">
 				<div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
 					<div>
 						<h1 className="text-3xl font-bold text-first">Gestión de Gastos</h1>
@@ -83,103 +92,98 @@ const ExpensesManagementPage = () => {
 				</div>
 
 				{filteredExpenses.length > 0 ? (
-					<div className="bg-main rounded-2xl border border-first/10 overflow-hidden">
-						<div className="overflow-x-auto">
-							<table className="w-full">
-								<thead>
-									<tr className="border-b border-first/10">
-										<th className="text-left p-4 text-xs font-medium text-first/40 uppercase">
-											Auto
-										</th>
-										<th className="text-left p-4 text-xs font-medium text-first/40 uppercase">
-											Tipo
-										</th>
-										<th className="text-left p-4 text-xs font-medium text-first/40 uppercase">
-											Monto
-										</th>
-										<th className="text-left p-4 text-xs font-medium text-first/40 uppercase">
-											Fecha
-										</th>
-										<th className="text-left p-4 text-xs font-medium text-first/40 uppercase">
-											JC
-										</th>
-										<th className="text-right p-4 text-xs font-medium text-first/40 uppercase">
-											Acciones
-										</th>
-									</tr>
-								</thead>
-								<tbody>
-									{filteredExpenses.map((expense) => (
-										<tr
-											key={expense._id}
-											className="border-b border-first/5 hover:bg-first/5"
+					<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+						{filteredExpenses.map((expense) => (
+							<div
+								key={expense._id}
+								className="bg-main rounded-2xl border border-first/10 hover:shadow-lg hover:border-second/20 transition-all duration-200"
+							>
+								<div className="p-4">
+									{/* Car info */}
+									<div className="flex items-center gap-2 mb-3">
+										<div className="w-10 h-10 rounded-lg bg-first/5 flex items-center justify-center shrink-0">
+											<BsCarFront className="w-5 h-5 text-first/30" />
+										</div>
+										<div className="min-w-0">
+											<p className="text-sm font-medium text-first truncate">
+												{expense.car?.carModel?.name} {expense.car?.year}
+											</p>
+											<p className="text-xs text-first/40">
+												{expense.car?.vin}
+											</p>
+										</div>
+									</div>
+
+									{/* Type & JC Badge */}
+									<div className="flex items-center gap-2 mb-3">
+										<Badge
+											size="sm"
+											variant={expense.isFromJuanCarlos ? "info" : "neutral"}
 										>
-											<td className="p-4">
-												<p className="font-medium text-first text-sm">
-													{expense.car?.brand?.name}{" "}
-													{expense.car?.carModel?.name}
-												</p>
-												<p className="text-xs text-first/40">
-													{expense.car?.year}
-												</p>
-											</td>
-											<td className="p-4">
-												<p className="text-sm text-first/70">{expense.type}</p>
-												{expense.description && (
-													<p className="text-xs text-first/40">
-														{expense.description}
-													</p>
-												)}
-											</td>
-											<td className="p-4">
-												<p className="text-sm font-medium text-first">
-													{expense.currency === "CRC"
-														? formatCRC(expense.amount)
-														: formatUSD(expense.amount)}
-												</p>
-											</td>
-											<td className="p-4">
-												<p className="text-sm text-first/60">
-													{formatDate(expense.expenseDate)}
-												</p>
-											</td>
-											<td className="p-4">
-												<Badge
-													size="sm"
-													variant={
-														expense.isFromJuanCarlos ? "info" : "neutral"
-													}
-												>
-													{expense.isFromJuanCarlos ? "JC" : "MBV"}
-												</Badge>
-											</td>
-											<td className="p-4">
-												<div className="flex items-center justify-end gap-1">
-													<Button
-														iconOnly
-														variant="ghost"
-														size="sm"
-														icon={<BsPencil className="w-3.5 h-3.5" />}
-														onClick={() => {
-															setEditingExpense(expense);
-															setIsFormOpen(true);
-														}}
-													/>
-													<Button
-														iconOnly
-														variant="ghost"
-														size="sm"
-														className="text-error"
-														icon={<BsTrash className="w-3.5 h-3.5" />}
-														onClick={() => setDeleteConfirm(expense._id)}
-													/>
-												</div>
-											</td>
-										</tr>
-									))}
-								</tbody>
-							</table>
-						</div>
+											{expense.isFromJuanCarlos ? "JC" : "MBV"}
+										</Badge>
+										<p className="text-sm text-first/70 truncate">
+											{expense.type}
+										</p>
+									</div>
+
+									{expense.description && (
+										<p className="text-xs text-first/40 mb-3 truncate">
+											{expense.description}
+										</p>
+									)}
+
+									{/* Amount & Date */}
+									<div className="flex items-center justify-between pt-3 border-t border-first/5">
+										<div className="flex items-center gap-1.5">
+											<BsCash className="w-3.5 h-3.5 text-first/30" />
+											<p className="text-lg font-bold text-second">
+												{expense.currency === "CRC"
+													? formatCRC(expense.amount)
+													: formatUSD(expense.amount)}
+											</p>
+										</div>
+										<div className="flex items-center gap-1.5 text-xs text-first/40">
+											<BsCalendar className="w-3 h-3" />
+											{formatDate(expense.expenseDate)}
+										</div>
+									</div>
+								</div>
+
+								{/* Actions */}
+								<div className="px-4 pb-3 flex gap-1 justify-end border-t border-first/5 pt-2">
+									{expense.receipt && (
+										<Button
+											iconOnly
+											variant="ghost"
+											size="sm"
+											className="text-second"
+											icon={<BsFileText className="w-3.5 h-3.5" />}
+											onClick={() => window.open(expense.receipt, "_blank")}
+											title="Ver comprobante"
+										/>
+									)}
+									<Button
+										iconOnly
+										variant="ghost"
+										size="sm"
+										icon={<BsPencil className="w-3.5 h-3.5" />}
+										onClick={() => {
+											setEditingExpense(expense);
+											setIsFormOpen(true);
+										}}
+									/>
+									<Button
+										iconOnly
+										variant="ghost"
+										size="sm"
+										className="text-error"
+										icon={<BsTrash className="w-3.5 h-3.5" />}
+										onClick={() => setDeleteConfirm(expense._id)}
+									/>
+								</div>
+							</div>
+						))}
 					</div>
 				) : (
 					<EmptyState

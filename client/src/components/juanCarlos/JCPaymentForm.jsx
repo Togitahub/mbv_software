@@ -97,6 +97,7 @@ const JCPaymentForm = ({ payment, onClose, onSuccess }) => {
 						? formData.associatedCars
 						: undefined,
 				transferReference: formData.transferReference.trim() || undefined,
+				receipt: formData.receipt || undefined,
 			},
 		};
 

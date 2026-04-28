@@ -94,6 +94,10 @@ const clientPaymentResolvers = {
 				throw new Error("Not authorized");
 			}
 
+			if (input.receipt === "" || input.receipt === undefined) {
+				input.receipt = null;
+			}
+
 			const updatedPayment = await ClientPayment.findByIdAndUpdate(
 				id,
 				{ $set: input },

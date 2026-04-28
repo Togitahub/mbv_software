@@ -8,7 +8,10 @@ import {
 	TRANSMISSION_OPTIONS,
 	DRIVETRAIN_OPTIONS,
 	FUEL_TYPE_OPTIONS,
+	LOGISTIC_STATUS_OPTIONS,
+	AVAILABILITY_OPTIONS,
 } from "../../utils/constants";
+import { useAuth } from "../../context/AuthContext";
 
 const Filters = ({
 	filters,
@@ -18,6 +21,8 @@ const Filters = ({
 }) => {
 	const [isAdvancedOpen, setIsAdvancedOpen] = useState(showAdvanced);
 	const [searchValue, setSearchValue] = useState(filters.search || "");
+
+	const { user } = useAuth();
 
 	const handleSearch = (e) => {
 		e.preventDefault();
@@ -36,7 +41,7 @@ const Filters = ({
 	return (
 		<div className="bg-main rounded-xl border border-first/10 p-4 space-y-4">
 			{/* Search Bar */}
-			<form onSubmit={handleSearch} className="flex gap-2">
+			<form onSubmit={handleSearch} className="flex flex-col lg:flex-row gap-2">
 				<div className="relative flex-1">
 					<BsSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-first/30" />
 					<input
@@ -81,9 +86,9 @@ const Filters = ({
 
 			{/* Advanced Filters */}
 			<div
-				className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 transition-all duration-300 ${
+				className={`grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 transition-all duration-300 ${
 					isAdvancedOpen
-						? "opacity-100 max-h-96"
+						? "opacity-100 max-h-96 overflow-auto"
 						: "opacity-0 max-h-0 overflow-hidden"
 				}`}
 			>
@@ -107,6 +112,28 @@ const Filters = ({
 						onFilterChange({ transmission: e.target.value || undefined })
 					}
 				/>
+				<Select
+					label="Estado logístico"
+					size="sm"
+					placeholder="Todos"
+					options={LOGISTIC_STATUS_OPTIONS}
+					value={filters.logisticStatus || ""}
+					onChange={(e) =>
+						onFilterChange({ logisticStatus: e.target.value || undefined })
+					}
+				/>
+				{(user?.role === "superadmin" || user?.role === "admin") && (
+					<Select
+						label="Disponibilidad"
+						size="sm"
+						placeholder="Todas"
+						options={AVAILABILITY_OPTIONS}
+						value={filters.availability || ""}
+						onChange={(e) =>
+							onFilterChange({ availability: e.target.value || undefined })
+						}
+					/>
+				)}
 				<Select
 					label="Tracción"
 					size="sm"

@@ -63,7 +63,7 @@ const ExpenseForm = ({ expense, onClose, onSuccess }) => {
 	const cars = carsData?.cars?.cars || [];
 	const carOptions = cars.map((c) => ({
 		value: c._id,
-		label: `${c.brand?.name} ${c.carModel?.name} ${c.year}`,
+		label: `${c.carModel?.name} ${c.year} ${c.vin}`,
 	}));
 	const loading = creating || updating;
 
@@ -110,13 +110,27 @@ const ExpenseForm = ({ expense, onClose, onSuccess }) => {
 				currency: formData.currency,
 				expenseDate: formData.expenseDate,
 				isFromJuanCarlos: formData.isFromJuanCarlos,
+				receipt: formData.receipt || undefined,
 			},
 		};
+
+		console.log("Enviando update con:", variables);
 
 		try {
 			if (isEditing) {
 				await updateExpense({
-					variables: { id: expense._id, input: variables.input },
+					variables: {
+						id: expense._id,
+						input: {
+							type: formData.type,
+							description: formData.description.trim() || undefined,
+							amount: Number(formData.amount),
+							currency: formData.currency,
+							expenseDate: formData.expenseDate,
+							isFromJuanCarlos: formData.isFromJuanCarlos,
+							receipt: formData.receipt || undefined,
+						},
+					},
 				});
 				toast.success("Gasto actualizado");
 			} else {

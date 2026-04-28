@@ -32,9 +32,9 @@ import {
 	formatDate,
 	formatMileage,
 	getLogisticStatusText,
-	getAvailabilityText,
 	getLogisticStatusColor,
 	getAvailabilityColor,
+	getDetailsTranslation,
 } from "../../utils/formatters";
 
 const CarDetail = () => {
@@ -64,13 +64,21 @@ const CarDetail = () => {
 	const displayMileage = car.adjustedMileage || car.actualMileage;
 
 	const specs = [
-		{ icon: BsFuelPump, label: "Combustible", value: car.fuelType },
+		{
+			icon: BsFuelPump,
+			label: "Combustible",
+			value: getDetailsTranslation("fuelType", car.fuelType),
+		},
 		{
 			icon: BsGear,
 			label: "Transmisión",
-			value: car.transmission === "Automatic" ? "Automática" : "Manual",
+			value: getDetailsTranslation("transmission", car.transmission),
 		},
-		{ icon: BsCarFront, label: "Tracción", value: car.drivetrain },
+		{
+			icon: BsCarFront,
+			label: "Tracción",
+			value: getDetailsTranslation("drivetrain", car.drivetrain),
+		},
 		{
 			icon: BsSpeedometer2,
 			label: "Millaje",
@@ -121,7 +129,7 @@ const CarDetail = () => {
 									className={getAvailabilityColor(car.availability)}
 									size="sm"
 								>
-									{getAvailabilityText(car.availability)}
+									{getDetailsTranslation("availability", car.availability)}
 								</Badge>
 							</div>
 							<h1 className="text-3xl font-bold text-first">

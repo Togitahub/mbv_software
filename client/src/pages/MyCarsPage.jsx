@@ -10,7 +10,7 @@ import { LoadingOverlay } from "../components/ui/LoadingUi";
 import {
 	formatCRC,
 	getLogisticStatusText,
-	getAvailabilityText,
+	getDetailsTranslation,
 } from "../utils/formatters";
 import Badge from "../components/ui/Badge";
 
@@ -77,7 +77,10 @@ const MyCarsPage = () => {
 															{getLogisticStatusText(car.logisticStatus)}
 														</Badge>
 														<Badge variant="warning" size="sm">
-															{getAvailabilityText(car.availability)}
+															{getDetailsTranslation(
+																"availability",
+																car.availability,
+															)}
 														</Badge>
 													</div>
 												</div>

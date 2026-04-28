@@ -15,11 +15,20 @@ import Badge from "../../components/ui/Badge";
 import { Modal, ConfirmDialog } from "../../components/ui/Modal";
 import { LoadingOverlay } from "../../components/ui/LoadingUi";
 import EmptyState from "../../components/ui/EmptyState";
-import { BsPlus, BsPencil, BsTrash, BsShieldLock } from "react-icons/bs";
+import {
+	BsPlus,
+	BsPencil,
+	BsTrash,
+	BsShieldLock,
+	BsArrowLeft,
+} from "react-icons/bs";
 import { formatDate } from "../../utils/formatters";
 import { ROLE_OPTIONS } from "../../utils/constants";
+import { useNavigate } from "react-router-dom";
 
 const UsersManagementPage = () => {
+	const navigate = useNavigate();
+
 	const { user: currentUser } = useAuth();
 	const { toast } = useToast();
 	const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -153,7 +162,7 @@ const UsersManagementPage = () => {
 		return <LoadingOverlay visible={true} text="Cargando usuarios..." />;
 
 	return (
-		<div className="min-h-screen pt-20 pb-16">
+		<div className="min-h-screen pt-6 pb-16">
 			<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 				<div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
 					<div>
@@ -164,12 +173,17 @@ const UsersManagementPage = () => {
 							{users.length} usuarios registrados (solo superadmin)
 						</p>
 					</div>
-					<Button
-						icon={<BsPlus className="w-4 h-4" />}
-						onClick={() => setIsCreateModalOpen(true)}
-					>
-						Nuevo usuario
-					</Button>
+					<div className="flex justify-center gap-2">
+						<Button icon={<BsArrowLeft />} onClick={() => navigate(-1)}>
+							Volver
+						</Button>
+						<Button
+							icon={<BsPlus className="w-4 h-4" />}
+							onClick={() => setIsCreateModalOpen(true)}
+						>
+							Nuevo usuario
+						</Button>
+					</div>
 				</div>
 
 				{users.length > 0 ? (

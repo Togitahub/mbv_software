@@ -39,6 +39,19 @@ export const formatDate = (date) => {
 	if (!date) return "—";
 
 	try {
+		// Extraer año, mes, día directamente del string para evitar problemas de zona horaria
+		const match = date.toString().match(/^(\d{4})-(\d{2})-(\d{2})/);
+		if (match) {
+			const [, year, month, day] = match;
+			return new Intl.DateTimeFormat("es-CR", {
+				year: "numeric",
+				month: "long",
+				day: "numeric",
+				timeZone: "UTC",
+			}).format(new Date(`${year}-${month}-${day}T00:00:00Z`));
+		}
+
+		// Fallback para otros formatos
 		const dateObj = new Date(date);
 		if (isNaN(dateObj.getTime())) return "—";
 
@@ -60,11 +73,21 @@ export const formatDate = (date) => {
 export const formatShortDate = (date) => {
 	if (!date) return "—";
 
-	return new Intl.DateTimeFormat("es-CR", {
-		year: "numeric",
-		month: "2-digit",
-		day: "2-digit",
-	}).format(new Date(date));
+	try {
+		const match = date.toString().match(/^(\d{4})-(\d{2})-(\d{2})/);
+		if (match) {
+			const [, year, month, day] = match;
+			return `${day}/${month}/${year}`;
+		}
+
+		return new Intl.DateTimeFormat("es-CR", {
+			year: "numeric",
+			month: "2-digit",
+			day: "2-digit",
+		}).format(new Date(date));
+	} catch {
+		return "—";
+	}
 };
 
 /**
@@ -143,12 +166,39 @@ export const getLogisticStatusText = (status) => {
  * @param {string} availability - Disponibilidad
  * @returns {string} - Texto traducido
  */
-export const getAvailabilityText = (availability) => {
-	const texts = {
-		Available: "Disponible",
-		Reserved: "Reservado",
-		"Under repair": "En reparación",
-		Sold: "Vendido",
+export const getDetailsTranslation = (detailType, detail) => {
+	if (!detail) return "-";
+
+	const translation = {
+		availability: {
+			Available: "Disponible",
+			Reserved: "Reservado",
+			"Under repair": "En reparación",
+			Sold: "Vendido",
+		},
+		fuelType: {
+			Gasoline: "Gasolina",
+			Diesel: "Diésel",
+			Electric: "Eléctrico",
+			Hybrid: "Híbrido",
+			Other: "Otro",
+		},
+		transmission: { Automatic: "Automática", Manual: "Manual" },
+		drivetrain: {
+			Front: "Delantera",
+			Rear: "Trasera",
+			"4x4": "4x4",
+		},
+		bodyType: {
+			SUV: "SUV",
+			Sedan: "Sedán",
+			"Pick-up": "Pick-up",
+			Hatchback: "Hatchback",
+			Coupe: "Coupé",
+			Convertible: "Convertible",
+			Van: "Van",
+			Other: "Otro",
+		},
 	};
-	return texts[availability] || availability;
+	return translation[detailType]?.[detail] || detail;
 };

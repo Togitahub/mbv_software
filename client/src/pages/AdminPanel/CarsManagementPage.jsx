@@ -1,6 +1,12 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { BsPlus, BsPencil, BsTrash } from "react-icons/bs";
+import {
+	BsPlus,
+	BsPencil,
+	BsTrash,
+	BsSpeedometer2,
+	BsCalendar,
+} from "react-icons/bs";
 import { useCar } from "../../context/CarContext";
 import Button from "../../components/ui/Button";
 import Badge from "../../components/ui/Badge";
@@ -10,15 +16,21 @@ import { Modal, ConfirmDialog } from "../../components/ui/Modal";
 import { LoadingOverlay } from "../../components/ui/LoadingUi";
 import EmptyState from "../../components/ui/EmptyState";
 import CarForm from "../../components/cars/CarForm";
+import Select from "../../components/ui/Select";
 import { useToast } from "../../context/ToastContext";
 import {
 	formatCRC,
+	formatMileage,
 	formatDate,
 	getLogisticStatusText,
-	getAvailabilityText,
 	getLogisticStatusColor,
 	getAvailabilityColor,
+	getDetailsTranslation,
 } from "../../utils/formatters";
+import {
+	LOGISTIC_STATUS_OPTIONS,
+	AVAILABILITY_OPTIONS,
+} from "../../utils/constants";
 
 const CarsManagementPage = () => {
 	const {
@@ -30,6 +42,7 @@ const CarsManagementPage = () => {
 		clearFilters,
 		changePage,
 		deleteCar,
+		bulkUpdateCars,
 		refetchCars,
 	} = useCar();
 
@@ -50,26 +63,26 @@ const CarsManagementPage = () => {
 		setDeleteConfirm(null);
 	};
 
-	const toggleSelectAll = () => {
-		if (selectedCars.length === cars?.cars?.length) {
-			setSelectedCars([]);
-		} else {
-			setSelectedCars(cars?.cars?.map((c) => c._id) || []);
-		}
-	};
-
 	const toggleSelectCar = (id) => {
 		setSelectedCars((prev) =>
 			prev.includes(id) ? prev.filter((c) => c !== id) : [...prev, id],
 		);
 	};
 
+	const handleBulkStatus = (value, field) => {
+		if (!value) return;
+		bulkUpdateCars({ carIds: selectedCars, [field]: value });
+		setSelectedCars([]);
+		toast.success("Vehículos actualizados");
+		refetchCars();
+	};
+
 	if (carsLoading)
 		return <LoadingOverlay visible={true} text="Cargando vehículos..." />;
 
 	return (
-		<div className="min-h-screen pt-20 pb-16">
-			<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+		<div className="min-h-screen pb-16">
+			<div className="px-4 sm:px-6 lg:px-8 py-6">
 				<div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
 					<div>
 						<h1 className="text-3xl font-bold text-first">
@@ -99,142 +112,130 @@ const CarsManagementPage = () => {
 				</div>
 
 				{selectedCars.length > 0 && (
-					<div className="bg-second/5 rounded-xl p-3 mb-4 flex items-center gap-3">
+					<div className="bg-second/5 rounded-xl p-3 mb-4 flex flex-wrap items-center gap-3">
 						<span className="text-sm text-first font-medium">
 							{selectedCars.length} seleccionados
 						</span>
+						<Select
+							size="sm"
+							placeholder="Estado logístico..."
+							className="w-48"
+							options={LOGISTIC_STATUS_OPTIONS}
+							onChange={(e) =>
+								handleBulkStatus(e.target.value, "logisticStatus")
+							}
+						/>
+						<Select
+							size="sm"
+							placeholder="Disponibilidad..."
+							className="w-44"
+							options={AVAILABILITY_OPTIONS}
+							onChange={(e) => handleBulkStatus(e.target.value, "availability")}
+						/>
 						<Button
 							variant="ghost"
 							size="sm"
 							onClick={() => setSelectedCars([])}
 						>
-							Cancelar selección
+							Cancelar
 						</Button>
 					</div>
 				)}
 
 				{cars?.cars?.length > 0 ? (
 					<>
-						<div className="bg-main rounded-2xl border border-first/10 overflow-hidden">
-							<div className="overflow-x-auto">
-								<table className="w-full">
-									<thead>
-										<tr className="border-b border-first/10">
-											<th className="w-10 p-4">
-												<input
-													type="checkbox"
-													checked={
-														selectedCars.length === cars?.cars?.length &&
-														cars?.cars?.length > 0
-													}
-													onChange={toggleSelectAll}
-													className="rounded border-first/30"
-												/>
-											</th>
-											<th className="text-left p-4 text-xs font-medium text-first/40 uppercase">
-												Vehículo
-											</th>
-											<th className="text-left p-4 text-xs font-medium text-first/40 uppercase">
-												Precio
-											</th>
-											<th className="text-left p-4 text-xs font-medium text-first/40 uppercase">
-												Estado
-											</th>
-											<th className="text-left p-4 text-xs font-medium text-first/40 uppercase">
-												Disp.
-											</th>
-											<th className="text-left p-4 text-xs font-medium text-first/40 uppercase">
-												Fecha
-											</th>
-											<th className="text-right p-4 text-xs font-medium text-first/40 uppercase">
-												Acciones
-											</th>
-										</tr>
-									</thead>
-									<tbody>
-										{cars.cars.map((car) => (
-											<tr
-												key={car._id}
-												className="border-b border-first/5 hover:bg-first/5 transition-colors"
+						<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+							{cars.cars.map((car) => (
+								<div
+									key={car._id}
+									className={`relative bg-main text-center rounded-2xl border transition-all duration-200 hover:shadow-lg ${
+										selectedCars.includes(car._id)
+											? "border-second ring-2 ring-second/20"
+											: "border-first/10 hover:border-second/30"
+									}`}
+								>
+									{/* Checkbox */}
+									<div className="absolute top-3 left-3 z-10">
+										<input
+											type="checkbox"
+											checked={selectedCars.includes(car._id)}
+											onChange={() => toggleSelectCar(car._id)}
+											className="rounded border-first/30 w-4 h-4"
+										/>
+									</div>
+
+									{/* Content */}
+									<Link
+										to={`/car/${car._id}`}
+										className="block text-center p-4 pt-10"
+									>
+										<h3 className="font-semibold text-first text-sm line-clamp-1">
+											{car.brand?.name} {car.carModel?.name} {car.year}{" "}
+											{car.color.toUpperCase()}
+										</h3>
+										<p className="text-xs text-first/40 mt-0.5">{car.vin}</p>
+									</Link>
+
+									<div className="px-4 pb-2 space-y-2">
+										<p className="text-lg font-bold text-second">
+											{formatCRC(car.publishedPriceCRC)}
+										</p>
+
+										<div className="flex items-center justify-center gap-2 text-xs text-first/50">
+											<BsSpeedometer2 className="w-3 h-3" />
+											{formatMileage(car.adjustedMileage || car.actualMileage)}
+											<BsCalendar className="w-3 h-3 ml-1" />
+											{formatDate(car.purchaseDate)}
+										</div>
+
+										<div className="flex items-center gap-1.5 flex-wrap">
+											<Badge
+												size="sm"
+												className={getLogisticStatusColor(car.logisticStatus)}
 											>
-												<td className="p-4">
-													<input
-														type="checkbox"
-														checked={selectedCars.includes(car._id)}
-														onChange={() => toggleSelectCar(car._id)}
-														className="rounded border-first/30"
-													/>
-												</td>
-												<td className="p-4">
-													<Link
-														to={`/car/${car._id}`}
-														className="hover:text-second transition-colors"
-													>
-														<p className="font-medium text-first">
-															{car.brand?.name} {car.carModel?.name}
-														</p>
-														<p className="text-xs text-first/40">
-															{car.year} • {car.vin}
-														</p>
-													</Link>
-												</td>
-												<td className="p-4">
-													<p className="text-sm font-medium text-first">
-														{formatCRC(car.publishedPriceCRC)}
-													</p>
-												</td>
-												<td className="p-4">
-													<Badge
-														size="sm"
-														className={getLogisticStatusColor(
-															car.logisticStatus,
-														)}
-													>
-														{getLogisticStatusText(car.logisticStatus)}
-													</Badge>
-												</td>
-												<td className="p-4">
-													<Badge
-														size="sm"
-														className={getAvailabilityColor(car.availability)}
-													>
-														{getAvailabilityText(car.availability)}
-													</Badge>
-												</td>
-												<td className="p-4">
-													<p className="text-sm text-first/60">
-														{car.creationDate || car.purchaseDate
-															? formatDate(car.creationDate || car.purchaseDate)
-															: "—"}
-													</p>
-												</td>
-												<td className="p-4">
-													<div className="flex items-center justify-end gap-1">
-														<Button
-															iconOnly
-															variant="ghost"
-															size="sm"
-															icon={<BsPencil className="w-3.5 h-3.5" />}
-															onClick={() => {
-																setEditingCar(car);
-																setIsFormOpen(true);
-															}}
-														/>
-														<Button
-															iconOnly
-															variant="ghost"
-															size="sm"
-															className="text-error"
-															icon={<BsTrash className="w-3.5 h-3.5" />}
-															onClick={() => setDeleteConfirm(car._id)}
-														/>
-													</div>
-												</td>
-											</tr>
-										))}
-									</tbody>
-								</table>
-							</div>
+												{getLogisticStatusText(car.logisticStatus)}
+											</Badge>
+											<Badge
+												size="sm"
+												className={getAvailabilityColor(car.availability)}
+											>
+												{getDetailsTranslation(
+													"availability",
+													car.availability,
+												)}
+											</Badge>
+										</div>
+
+										<p className="text-xs text-first/40">
+											{getDetailsTranslation("fuelType", car.fuelType)} •{" "}
+											{getDetailsTranslation("transmission", car.transmission)}{" "}
+											• {getDetailsTranslation("bodyType", car.bodyType)}
+										</p>
+									</div>
+
+									{/* Actions */}
+									<div className="px-4 pb-3 flex gap-1 justify-end border-t border-first/5 pt-2">
+										<Button
+											iconOnly
+											variant="ghost"
+											size="sm"
+											icon={<BsPencil className="w-3.5 h-3.5" />}
+											onClick={() => {
+												setEditingCar(car);
+												setIsFormOpen(true);
+											}}
+										/>
+										<Button
+											iconOnly
+											variant="ghost"
+											size="sm"
+											className="text-error"
+											icon={<BsTrash className="w-3.5 h-3.5" />}
+											onClick={() => setDeleteConfirm(car._id)}
+										/>
+									</div>
+								</div>
+							))}
 						</div>
 
 						<div className="mt-6">
@@ -260,7 +261,6 @@ const CarsManagementPage = () => {
 					/>
 				)}
 
-				{/* Modal del formulario */}
 				<Modal
 					isOpen={isFormOpen}
 					onClose={() => {
@@ -281,7 +281,6 @@ const CarsManagementPage = () => {
 					/>
 				</Modal>
 
-				{/* Confirmación de eliminación */}
 				<ConfirmDialog
 					isOpen={!!deleteConfirm}
 					onClose={() => setDeleteConfirm(null)}

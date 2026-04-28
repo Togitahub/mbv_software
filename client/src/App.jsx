@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import { lazy, Suspense } from "react";
 
 // Common components
@@ -8,6 +8,7 @@ import ScrollToTop from "./routes/ScrollToTop";
 import TokenWatcher from "./routes/TokenWatcher";
 import ProtectedRoutes from "./routes/ProtectedRoutes";
 import { LoadingOverlay } from "./components/ui/LoadingUi";
+import AdminLayout from "./components/common/AdminLayout";
 
 // Lazy loaded pages
 const LandingPage = lazy(() => import("./pages/LandingPage"));
@@ -58,11 +59,14 @@ const SuspenseFallback = () => (
 );
 
 const App = () => {
+	const location = useLocation();
+	const isAdminRoute = location.pathname.startsWith("/admin");
+
 	return (
 		<div className="min-h-screen bg-main text-first">
 			<ScrollToTop />
 			<TokenWatcher />
-			<Navbar />
+			{!isAdminRoute && <Navbar />}
 
 			<main className="min-h-screen">
 				<Suspense fallback={<SuspenseFallback />}>
@@ -96,30 +100,38 @@ const App = () => {
 								<ProtectedRoutes allowedRoles={["admin", "superadmin"]} />
 							}
 						>
-							<Route path="/admin/dashboard" element={<AdminDashboardPage />} />
-							<Route path="/admin/cars" element={<CarsManagementPage />} />
-							<Route path="/admin/dave-cars" element={<DaveCarsListPage />} />
-							<Route
-								path="/admin/clients"
-								element={<ClientsManagementPage />}
-							/>
-							<Route
-								path="/admin/expenses"
-								element={<ExpensesManagementPage />}
-							/>
-							<Route
-								path="/admin/general-expenses"
-								element={<GeneralExpensesPage />}
-							/>
-							<Route
-								path="/admin/jc-payments"
-								element={<JCPaymentsManagementPage />}
-							/>
-							<Route
-								path="/admin/client-payments"
-								element={<ClientPaymentsManagementPage />}
-							/>
-							<Route path="/admin/reports" element={<AccountingReportPage />} />
+							<Route element={<AdminLayout />}>
+								<Route
+									path="/admin/dashboard"
+									element={<AdminDashboardPage />}
+								/>
+								<Route path="/admin/cars" element={<CarsManagementPage />} />
+								<Route path="/admin/dave-cars" element={<DaveCarsListPage />} />
+								<Route
+									path="/admin/clients"
+									element={<ClientsManagementPage />}
+								/>
+								<Route
+									path="/admin/expenses"
+									element={<ExpensesManagementPage />}
+								/>
+								<Route
+									path="/admin/general-expenses"
+									element={<GeneralExpensesPage />}
+								/>
+								<Route
+									path="/admin/jc-payments"
+									element={<JCPaymentsManagementPage />}
+								/>
+								<Route
+									path="/admin/client-payments"
+									element={<ClientPaymentsManagementPage />}
+								/>
+								<Route
+									path="/admin/reports"
+									element={<AccountingReportPage />}
+								/>
+							</Route>
 						</Route>
 
 						{/* Protected routes - Superadmin only */}
@@ -133,7 +145,7 @@ const App = () => {
 				</Suspense>
 			</main>
 
-			<Footer />
+			{!isAdminRoute && <Footer />}
 		</div>
 	);
 };

@@ -68,6 +68,10 @@ const generalExpenseResolvers = {
 				throw new Error("Not authorized");
 			}
 
+			if (input.receipt === "" || input.receipt === undefined) {
+				input.receipt = null;
+			}
+
 			const updatedExpense = await GeneralExpense.findByIdAndUpdate(
 				id,
 				{ $set: input },
@@ -85,6 +89,15 @@ const generalExpenseResolvers = {
 
 			await GeneralExpense.findByIdAndDelete(id);
 			return true;
+		},
+	},
+
+	GeneralExpense: {
+		expenseDate: (expense) => {
+			return expense.expenseDate?.toISOString?.() ?? null;
+		},
+		createdAt: (expense) => {
+			return expense.createdAt?.toISOString?.() ?? null;
 		},
 	},
 };

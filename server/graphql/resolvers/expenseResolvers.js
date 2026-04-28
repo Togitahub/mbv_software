@@ -22,7 +22,18 @@ const expenseResolvers = {
 			if (type) query.type = type;
 
 			let expensesQuery = Expense.find(query)
-				.populate("car")
+				.populate({
+					path: "car",
+					populate: {
+						path: "brand",
+					},
+				})
+				.populate({
+					path: "car",
+					populate: {
+						path: "carModel",
+					},
+				})
 				.sort({ expenseDate: -1 });
 
 			if (page && limit) {
@@ -102,7 +113,10 @@ const expenseResolvers = {
 				}
 			}
 
-			return Expense.findById(expense._id).populate("car");
+			return Expense.findById(expense._id).populate({
+				path: "car",
+				populate: [{ path: "brand" }, { path: "carModel" }],
+			});
 		},
 
 		updateExpense: async (_, { id, input }, { user }) => {
@@ -118,11 +132,18 @@ const expenseResolvers = {
 				throw new Error("Cannot update expenses of a sold car");
 			}
 
+			if (input.receipt === "" || input.receipt === undefined) {
+				input.receipt = null;
+			}
+
 			const updatedExpense = await Expense.findByIdAndUpdate(
 				id,
 				{ $set: input },
 				{ new: true, runValidators: true },
-			).populate("car");
+			).populate({
+				path: "car",
+				populate: [{ path: "brand" }, { path: "carModel" }],
+			});
 
 			return updatedExpense;
 		},
@@ -149,6 +170,15 @@ const expenseResolvers = {
 
 			await Expense.findByIdAndDelete(id);
 			return true;
+		},
+	},
+
+	Expense: {
+		expenseDate: (expense) => {
+			return expense.expenseDate?.toISOString?.() ?? null;
+		},
+		createdAt: (expense) => {
+			return expense.createdAt?.toISOString?.() ?? null;
 		},
 	},
 };

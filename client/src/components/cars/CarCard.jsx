@@ -10,6 +10,7 @@ import {
 	formatMileage,
 	getLogisticStatusText,
 	getLogisticStatusColor,
+	getDetailsTranslation,
 } from "../../utils/formatters";
 
 const CarCard = ({ car }) => {
@@ -89,12 +90,12 @@ const CarCard = ({ car }) => {
 					<div className="flex flex-col items-center p-2 bg-first/5 rounded-lg">
 						<BsGear className="w-4 h-4 text-first/40 mb-1" />
 						<span className="text-xs text-first/60">
-							{car.transmission === "Automatic" ? "Aut." : "Man."}
+							{getDetailsTranslation("transmission", car.transmission)}
 						</span>
 					</div>
 					<div className="flex flex-col items-center p-2 bg-first/5 rounded-lg">
 						<BsFuelPump className="w-4 h-4 text-first/40 mb-1" />
-						<span className="text-xs text-first/60">{car.fuelType}</span>
+						{getDetailsTranslation("fuelType", car.fuelType)}
 					</div>
 				</div>
 

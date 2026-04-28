@@ -119,6 +119,10 @@ const jcPaymentResolvers = {
 				throw new Error("This payment cannot be updated");
 			}
 
+			if (input.receipt === "" || input.receipt === undefined) {
+				input.receipt = null;
+			}
+
 			const updatedPayment = await JCPayment.findByIdAndUpdate(
 				id,
 				{
