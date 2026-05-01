@@ -12,6 +12,7 @@ export const GET_EXPENSES = gql`
 				carModel {
 					name
 				}
+				color
 				year
 				vin
 			}

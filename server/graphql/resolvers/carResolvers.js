@@ -1,6 +1,8 @@
 import Car from "../../models/Car.js";
 import User from "../../models/User.js";
+import Brand from "../../models/Brand.js";
 import Expense from "../../models/Expense.js";
+import CarModel from "../../models/CarModel.js";
 import CompanyBalance from "../../models/CompanyBalance.js";
 
 import {
@@ -29,7 +31,7 @@ const carResolvers = {
 				throw new Error("Not authorized");
 			}
 
-			const query = buildCarQuery(filters);
+			const query = await buildCarQuery(filters);
 
 			const sortOptions = {};
 			sortOptions[sortBy] = sortOrder === "asc" ? 1 : -1;
@@ -77,7 +79,7 @@ const carResolvers = {
 			},
 		) => {
 			const query = {
-				...buildCarQuery(filters),
+				...(await buildCarQuery(filters)),
 				availability: "Available",
 				owner: { $ne: "Dave" },
 			};
@@ -435,7 +437,7 @@ const carResolvers = {
 };
 
 // Helper function to build query filters
-function buildCarQuery(filters) {
+async function buildCarQuery(filters) {
 	const query = {};
 
 	if (filters.brand) query.brand = filters.brand;
@@ -463,12 +465,62 @@ function buildCarQuery(filters) {
 	}
 
 	if (filters.search) {
-		query.$or = [
-			{ vin: { $regex: filters.search, $options: "i" } },
-			{ dua: { $regex: filters.search, $options: "i" } },
-			{ color: { $regex: filters.search, $options: "i" } },
-			{ description: { $regex: filters.search, $options: "i" } },
-		];
+		const words = filters.search
+			.trim()
+			.split(/\s+/)
+			.filter((w) => w.length > 0);
+		const conditions = [];
+		const searchRegex = { $regex: filters.search, $options: "i" };
+
+		// Siempre buscar en VIN y DUA (rápido, usan índice)
+		conditions.push({ vin: searchRegex }, { dua: searchRegex });
+
+		if (words.length === 1) {
+			const word = words[0];
+			const wordRegex = { $regex: `^${word}$`, $options: "i" };
+			const num = Number(word);
+
+			if (!isNaN(num) && num > 1900 && num < 2100) {
+				conditions.push({ year: num });
+			}
+
+			const [brand, model] = await Promise.all([
+				Brand.findOne({ name: wordRegex }).select("_id").lean(),
+				CarModel.findOne({ name: wordRegex }).select("_id").lean(),
+			]);
+			if (brand) conditions.push({ brand: brand._id });
+			if (model) conditions.push({ carModel: model._id });
+		} else {
+			// Múltiples palabras: buscar combinación AND
+			const andConditions = [];
+
+			for (const word of words) {
+				const num = Number(word);
+				if (!isNaN(num) && num > 1900 && num < 2100) {
+					andConditions.push({ year: num });
+					continue;
+				}
+				const wordRegex = { $regex: word, $options: "i" };
+				const [brand, model] = await Promise.all([
+					Brand.findOne({ name: wordRegex }).select("_id").lean(),
+					CarModel.findOne({ name: wordRegex }).select("_id").lean(),
+				]);
+				if (brand && !andConditions.some((c) => c.brand)) {
+					andConditions.push({ brand: brand._id });
+				}
+				if (model && !andConditions.some((c) => c.carModel)) {
+					andConditions.push({ carModel: model._id });
+				}
+			}
+
+			if (andConditions.length >= 2) {
+				conditions.push({ $and: andConditions });
+			} else if (andConditions.length === 1) {
+				conditions.push(andConditions[0]);
+			}
+		}
+
+		query.$or = conditions;
 	}
 
 	return query;

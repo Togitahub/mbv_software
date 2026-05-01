@@ -222,7 +222,6 @@ const CarsManagementPage = () => {
 										<h3 className="font-semibold text-first text-sm line-clamp-1">
 											{car.brand?.name} {car.carModel?.name} {car.year}{" "}
 											{car.color.toUpperCase()}
-											{console.log(car.availability)}
 										</h3>
 										<p className="text-xs text-first/40 mt-0.5">{car.vin}</p>
 									</Link>

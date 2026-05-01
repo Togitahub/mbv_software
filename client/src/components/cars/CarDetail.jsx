@@ -36,6 +36,8 @@ import {
 	getAvailabilityColor,
 	getDetailsTranslation,
 } from "../../utils/formatters";
+import { GET_CAR_EXPENSES_SUMMARY } from "../../graphql/queries/expenseQueries";
+import { GET_EXCHANGE_RATE } from "../../graphql/queries/exchangeRateQueries";
 
 const CarDetail = () => {
 	const { id } = useParams();
@@ -51,6 +53,19 @@ const CarDetail = () => {
 	});
 
 	const car = data?.car;
+
+	const { data: expensesData } = useQuery(GET_CAR_EXPENSES_SUMMARY, {
+		variables: { carId: id },
+	});
+
+	const expensesCRC = expensesData?.carExpensesSummary?.totalCRC || 0;
+	const expensesUSD = expensesData?.carExpensesSummary?.totalUSD || 0;
+
+	const { data: exchangeData } = useQuery(GET_EXCHANGE_RATE);
+
+	const exchangeRate = exchangeData?.exchangeRate?.value || 0;
+
+	const totalExpenses = expensesCRC + expensesUSD * exchangeRate;
 
 	if (loading)
 		return <LoadingOverlay visible={true} text="Cargando detalles..." />;
@@ -110,12 +125,16 @@ const CarDetail = () => {
 				{/* Header */}
 				<div className="flex flex-col lg:flex-row gap-8">
 					{/* Image Gallery */}
-					<div className="lg:w-3/5">
-						<ImageGallery images={car.images} />
-					</div>
+					{car.images && car.images.length > 0 && (
+						<div className="lg:w-3/5">
+							<ImageGallery images={car.images} />
+						</div>
+					)}
 
 					{/* Details */}
-					<div className="lg:w-2/5 space-y-6">
+					<div
+						className={`${car.images && car.images.length > 0 ? "lg:w-2/5" : "lg:w-full"} space-y-6`}
+					>
 						{/* Title & Status */}
 						<div>
 							<div className="flex items-center gap-2 mb-2">
@@ -223,46 +242,34 @@ const CarDetail = () => {
 									Información Administrativa
 								</h3>
 								<div className="grid grid-cols-2 gap-2 text-sm">
-									<div>
-										<p className="text-first/40">VIN</p>
-										<p className="text-first font-mono">{car.vin}</p>
-									</div>
-									<div>
-										<p className="text-first/40">DUA</p>
-										<p className="text-first font-mono">{car.dua}</p>
-									</div>
-									<div>
-										<p className="text-first/40">Compra USA</p>
-										<p className="text-first">{formatDate(car.purchaseDate)}</p>
-									</div>
-									<div>
-										<p className="text-first/40">Valor compra</p>
-										<p className="text-first">
-											{formatUSD(car.purchaseValueUSD)}
-										</p>
-									</div>
-									<div>
-										<p className="text-first/40">Valor factura</p>
-										<p className="text-first">
-											{formatUSD(car.invoiceValueUSD)}
-										</p>
-									</div>
-									<div>
-										<p className="text-first/40">Dueño</p>
-										<p className="text-first">{car.owner}</p>
-									</div>
+									<p className="text-first/40">VIN</p>
+									<p className="text-first font-mono">{car.vin}</p>
+									<p className="text-first/40">DUA</p>
+									<p className="text-first font-mono">{car.dua}</p>
+									<p className="text-first/40">Compra USA</p>
+									<p className="text-first">{formatDate(car.purchaseDate)}</p>
+									<p className="text-first/40">Valor compra</p>
+									<p className="text-first">
+										{formatUSD(car.purchaseValueUSD)}
+									</p>
+									<p className="text-first/40">Valor factura</p>
+									<p className="text-first">{formatUSD(car.invoiceValueUSD)}</p>
+									<p className="text-first/40">Dueño</p>
+									<p className="text-first">{car.owner}</p>
 									{car.saleDate && (
-										<div>
+										<>
 											<p className="text-first/40">Fecha venta</p>
 											<p className="text-first">{formatDate(car.saleDate)}</p>
-										</div>
+										</>
 									)}
 									{car.buyerName && (
-										<div>
+										<>
 											<p className="text-first/40">Comprador</p>
 											<p className="text-first">{car.buyerName}</p>
-										</div>
+										</>
 									)}
+									<p className="text-first/40">Gastos totales:</p>
+									<p className="text-first">{formatCRC(totalExpenses)}</p>
 								</div>
 
 								{/* Profit */}
@@ -270,9 +277,11 @@ const CarDetail = () => {
 									<div
 										className={`p-4 rounded-xl ${car.profitCRC >= 0 ? "bg-success/5" : "bg-error/5"}`}
 									>
-										<p className="text-sm text-first/40">Ganancia estimada</p>
+										<p className="text-center text-sm text-first/40">
+											{car.profitCRC >= 0 ? "Ganancia" : "Perdida"}
+										</p>
 										<p
-											className={`text-xl font-bold ${car.profitCRC >= 0 ? "text-success" : "text-error"}`}
+											className={`text-xl text-center font-bold ${car.profitCRC >= 0 ? "text-success" : "text-error"}`}
 										>
 											{formatCRC(car.profitCRC)}
 										</p>

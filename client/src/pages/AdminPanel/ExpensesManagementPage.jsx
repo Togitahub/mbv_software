@@ -54,8 +54,13 @@ const ExpensesManagementPage = () => {
 			exp.type?.toLowerCase().includes(s) ||
 			exp.car?.brand?.name?.toLowerCase().includes(s) ||
 			exp.car?.carModel?.name?.toLowerCase().includes(s) ||
-			exp.description?.toLowerCase().includes(s) ||
-			exp.car?.vin?.toLowerCase().includes(s)
+			exp.car?.vin?.toLowerCase().includes(s) ||
+			exp.car?.year?.toString().includes(s) ||
+			(
+				exp.car?.carModel?.name?.toLowerCase() +
+				" " +
+				exp.car?.year?.toString()
+			).includes(s)
 		);
 	});
 
@@ -137,7 +142,8 @@ const ExpensesManagementPage = () => {
 										</div>
 										<div className="min-w-0">
 											<p className="text-sm font-medium text-first truncate">
-												{expense.car?.carModel?.name} {expense.car?.year}
+												{expense.car?.carModel?.name} {expense.car?.year}{" "}
+												{expense.car?.color}
 											</p>
 											<p className="text-xs text-first/40">
 												{expense.car?.vin}

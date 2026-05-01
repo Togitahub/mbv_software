@@ -1,15 +1,9 @@
 import { useMemo } from "react";
 import { useQuery } from "@apollo/client/react";
 
-import {
-	BsCashStack,
-	BsGraphUp,
-	BsPieChart,
-	BsBarChart,
-	BsCarFront,
-} from "react-icons/bs";
+import { BsGraphUp, BsPieChart, BsBarChart, BsCarFront } from "react-icons/bs";
 
-import { formatCRC, formatUSD } from "../../utils/formatters";
+import { formatCRC } from "../../utils/formatters";
 
 import { GET_EXCHANGE_RATE } from "../../graphql/queries/exchangeRateQueries";
 
@@ -102,32 +96,18 @@ const ExpensesAnalytics = ({ expenses = [], generalExpenses = [] }) => {
 
 	const statsCards = [
 		{
-			label: "Total gastos autos (CRC)",
+			label: "Total gastos autos",
 			value: formatCRC(analytics.totalCRC),
 			icon: BsCarFront,
 			color: "from-blue-500/20 to-blue-500/5",
 			iconColor: "text-blue-500",
 		},
 		{
-			label: "Total gastos autos (USD)",
-			value: formatUSD(analytics.totalUSD),
-			icon: BsCashStack,
-			color: "from-green-500/20 to-green-500/5",
-			iconColor: "text-green-500",
-		},
-		{
-			label: "Total gastos generales (CRC)",
+			label: "Total gastos generales",
 			value: formatCRC(analytics.totalGeneralCRC),
 			icon: BsGraphUp,
 			color: "from-purple-500/20 to-purple-500/5",
 			iconColor: "text-purple-500",
-		},
-		{
-			label: "Total gastos generales (USD)",
-			value: formatUSD(analytics.totalGeneralUSD),
-			icon: BsBarChart,
-			color: "from-yellow-500/20 to-yellow-500/5",
-			iconColor: "text-yellow-500",
 		},
 	];
 
@@ -149,13 +129,13 @@ const ExpensesAnalytics = ({ expenses = [], generalExpenses = [] }) => {
 	return (
 		<div className="space-y-6">
 			{/* Stats Cards */}
-			<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+			<div className="grid grid-cols-1 md:grid-cols-2 text-center gap-4">
 				{statsCards.map((stat) => (
 					<div
 						key={stat.label}
 						className={`bg-linear-to-br ${stat.color} rounded-2xl border border-first/10 p-5`}
 					>
-						<div className="flex items-center gap-2 mb-2">
+						<div className="flex items-center justify-center gap-2 mb-2">
 							<stat.icon className={`w-4 h-4 ${stat.iconColor}`} />
 							<span className="text-xs text-first/50">{stat.label}</span>
 						</div>

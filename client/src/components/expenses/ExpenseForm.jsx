@@ -1,7 +1,5 @@
 import { useState } from "react";
-import { useQuery, useMutation } from "@apollo/client/react";
-
-import { GET_CARS } from "../../graphql/queries/carQueries";
+import { useMutation } from "@apollo/client/react";
 
 import {
 	CREATE_EXPENSE,
@@ -16,6 +14,7 @@ import Button from "../ui/Button";
 import ImageUploader from "../cars/ImageUploader";
 
 import { EXPENSE_TYPE_OPTIONS } from "../../utils/constants";
+import CarSearchSelect from "../cars/CarSearchSelect";
 
 const initialFormData = {
 	car: "",
@@ -54,17 +53,9 @@ const ExpenseForm = ({ expense, onClose, onSuccess }) => {
 		return expense?.receipt ? [expense.receipt] : [];
 	});
 
-	const { data: carsData } = useQuery(GET_CARS, {
-		variables: { page: 1, limit: 1000 },
-	});
 	const [createExpense, { loading: creating }] = useMutation(CREATE_EXPENSE);
 	const [updateExpense, { loading: updating }] = useMutation(UPDATE_EXPENSE);
 
-	const cars = carsData?.cars?.cars || [];
-	const carOptions = cars.map((c) => ({
-		value: c._id,
-		label: `${c.carModel?.name} ${c.year} ${c.vin}`,
-	}));
 	const loading = creating || updating;
 
 	const handleChange = (field, value) => {
@@ -114,8 +105,6 @@ const ExpenseForm = ({ expense, onClose, onSuccess }) => {
 			},
 		};
 
-		console.log("Enviando update con:", variables);
-
 		try {
 			if (isEditing) {
 				await updateExpense({
@@ -146,15 +135,10 @@ const ExpenseForm = ({ expense, onClose, onSuccess }) => {
 
 	return (
 		<form onSubmit={handleSubmit} className="space-y-4">
-			<Select
-				label="Auto"
-				options={carOptions}
+			<CarSearchSelect
 				value={formData.car}
-				onChange={(e) => handleChange("car", e.target.value)}
-				error={errors.car}
+				onChange={(id) => handleChange("car", id)}
 				disabled={isEditing}
-				placeholder="Seleccionar auto..."
-				size="sm"
 			/>
 			<Select
 				label="Tipo de gasto"

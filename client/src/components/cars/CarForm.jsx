@@ -206,7 +206,6 @@ const CarForm = ({ car, onClose, onSuccess }) => {
 					input: { name: newModelName.trim(), brand: formData.brand },
 				},
 			});
-			console.log("Model created:", data);
 			setFormData((prev) => ({ ...prev, carModel: data.createCarModel._id }));
 			setNewModelName("");
 			setShowNewModel(false);
@@ -223,7 +222,6 @@ const CarForm = ({ car, onClose, onSuccess }) => {
 		if (!formData.brand) newErrors.brand = "Requerido";
 		if (!formData.carModel) newErrors.carModel = "Requerido";
 		if (!formData.vin.trim()) newErrors.vin = "Requerido";
-		if (!formData.dua.trim()) newErrors.dua = "Requerido";
 		if (!formData.year) newErrors.year = "Requerido";
 		if (!formData.purchaseDate) newErrors.purchaseDate = "Requerido";
 		if (!formData.publishedPriceCRC || Number(formData.publishedPriceCRC) <= 0)
@@ -799,9 +797,7 @@ const CarForm = ({ car, onClose, onSuccess }) => {
 			{!isEditing && (
 				<div className="space-y-4">
 					<div className="flex items-center justify-between border-b border-first/10 pb-2">
-						<h3 className="text-base font-semibold text-first">
-							Mas Gastos
-						</h3>
+						<h3 className="text-base font-semibold text-first">Mas Gastos</h3>
 						<Button
 							type="button"
 							variant="secondary"

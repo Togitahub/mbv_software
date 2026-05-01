@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useQuery, useMutation } from "@apollo/client/react";
 import { GET_CLIENT_PAYMENTS } from "../../graphql/queries/clientPaymentQueries";
 import { GET_CLIENTS } from "../../graphql/queries/userQueries";
-import { GET_CARS } from "../../graphql/queries/carQueries";
 import {
 	CREATE_CLIENT_PAYMENT,
 	UPDATE_CLIENT_PAYMENT,
@@ -18,6 +17,7 @@ import EmptyState from "../../components/ui/EmptyState";
 import { BsPlus, BsPencil, BsTrash, BsFileText } from "react-icons/bs";
 import { formatCRC, formatDate } from "../../utils/formatters";
 import ImageUploader from "../../components/cars/ImageUploader";
+import CarSearchSelect from "../../components/cars/CarSearchSelect";
 
 const ClientPaymentsManagementPage = () => {
 	const { toast } = useToast();
@@ -41,9 +41,6 @@ const ClientPaymentsManagementPage = () => {
 		refetch,
 	} = useQuery(GET_CLIENT_PAYMENTS, { fetchPolicy: "cache-and-network" });
 	const { data: clientsData } = useQuery(GET_CLIENTS);
-	const { data: carsData } = useQuery(GET_CARS, {
-		variables: { page: 1, limit: 1000 },
-	});
 
 	const [createClientPayment] = useMutation(CREATE_CLIENT_PAYMENT);
 	const [updateClientPayment] = useMutation(UPDATE_CLIENT_PAYMENT);
@@ -51,16 +48,10 @@ const ClientPaymentsManagementPage = () => {
 
 	const payments = paymentsData?.clientPayments || [];
 	const clients = clientsData?.clients || [];
-	const cars = carsData?.cars?.cars || [];
 
 	const clientOptions = clients.map((c) => ({
 		value: c._id,
 		label: `${c.name} (${c.email})`,
-	}));
-
-	const carOptions = cars.map((c) => ({
-		value: c._id,
-		label: `${c.brand?.name} ${c.carModel?.name} ${c.year} (${c.vin})`,
 	}));
 
 	const handleCreate = async (e) => {
@@ -338,16 +329,10 @@ const ClientPaymentsManagementPage = () => {
 							disabled={!!editingPayment}
 							placeholder="Seleccionar cliente..."
 						/>
-						<Select
-							label="Auto"
-							required
-							options={carOptions}
+						<CarSearchSelect
 							value={formData.car}
-							onChange={(e) =>
-								setFormData((p) => ({ ...p, car: e.target.value }))
-							}
+							onChange={(id) => setFormData((p) => ({ ...p, car: id }))}
 							disabled={!!editingPayment}
-							placeholder="Seleccionar auto..."
 						/>
 						<div className="grid grid-cols-2 gap-4">
 							<Input

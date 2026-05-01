@@ -10,7 +10,7 @@ const importExpenses = async () => {
 		await mongoose.connect(process.env.MONGO_URI);
 		console.log("Connected to MongoDB\n");
 
-		const csvPath = path.resolve("EXPENSES(EXPENSES).csv");
+		const csvPath = path.resolve("EXPENSES(EXPENSES V2).csv");
 		const csvData = fs.readFileSync(csvPath, "utf8");
 
 		const lines = csvData.trim().split("\n");
